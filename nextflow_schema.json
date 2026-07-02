@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://example.org/deaconizer/nextflow_schema.json",
+  "title": "deaconizer pipeline parameters",
+  "type": "object",
+  "definitions": {
+    "input_output_options": {
+      "title": "Input/output options",
+      "type": "object",
+      "required": ["input", "ref", "db"],
+      "properties": {
+        "input": {
+          "type": "string",
+          "description": "CSV samplesheet with columns sample_id, reads_r1, reads_r2."
+        },
+        "ref": {
+          "type": "string",
+          "description": "Reference FASTA used to build the Deacon minimizer index."
+        },
+        "db": {
+          "type": "string",
+          "description": "Kraken2 database directory."
+        },
+        "outdir": {
+          "type": "string",
+          "default": "results",
+          "description": "Output directory."
+        }
+      }
+    },
+    "deacon_options": {
+      "title": "Deacon options",
+      "type": "object",
+      "properties": {
+        "deacon_kmer_length": {
+          "type": "integer",
+          "default": 31
+        },
+        "deacon_window_size": {
+          "type": "integer",
+          "default": 15
+        },
+        "deacon_entropy_threshold": {
+          "type": "number",
+          "default": 0.0
+        },
+        "deacon_abs_threshold": {
+          "type": "integer",
+          "default": 1
+        },
+        "deacon_rel_threshold": {
+          "type": "number",
+          "default": 0.0
+        },
+        "deacon_prefix_length": {
+          "type": "integer",
+          "default": 0
+        },
+        "deacon_deplete": {
+          "type": "boolean",
+          "default": true
+        },
+        "deacon_filter_args": {
+          "type": "string",
+          "default": ""
+        },
+        "deacon_read_type": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    },
+    "runtime_options": {
+      "title": "Runtime options",
+      "type": "object",
+      "properties": {
+        "fastp_args": {
+          "type": "string",
+          "default": ""
+        },
+        "kraken2_args": {
+          "type": "string",
+          "default": ""
+        },
+        "multiqc_args": {
+          "type": "string",
+          "default": ""
+        },
+        "k8s_storage_claim_name": {
+          "type": "string"
+        },
+        "k8s_storage_mount_path": {
+          "type": "string",
+          "default": "/workspace"
+        },
+        "k8s_storage_sub_path": {
+          "type": "string",
+          "default": "/"
+        }
+      }
+    }
+  },
+  "allOf": [
+    { "$ref": "#/definitions/input_output_options" },
+    { "$ref": "#/definitions/deacon_options" },
+    { "$ref": "#/definitions/runtime_options" }
+  ]
+}
