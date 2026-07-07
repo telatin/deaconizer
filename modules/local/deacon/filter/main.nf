@@ -2,7 +2,7 @@ process DEACON_FILTER {
     tag "${meta.id}"
     label 'process_medium'
 
-    publishDir "${params.outdir}/reads/deacon", mode: params.publish_dir_mode, pattern: '*.deacon.R*.fq.gz'
+    publishDir "${params.outdir}/reads", mode: params.publish_dir_mode, pattern: '*.deacon.R*.fq.gz'
     publishDir "${params.outdir}/report/deacon", mode: params.publish_dir_mode, pattern: '*.deacon.json'
 
     container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?

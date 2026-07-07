@@ -1,0 +1,55 @@
+title: "Deaconizer output"
+subtitle: "Quadram Institute - Core Bioinformatics"
+intro_text: >
+  Read QC, host decontamination and Kraken2 taxonomic classification.
+
+# NOTE: do NOT use `top_modules` for this. `deacon` isn't yet in MultiQC's shipped
+# default `module_order` list (fastp/kraken are). Combined with a bug in
+# MultiQC 1.35's module-scheduling code (multiqc/core/file_search.py -
+# `_module_list_to_search`, the fallback-extend step compares a bare module-id
+# string against a list of {id: {}} dicts, so the "already added" check never
+# matches), any module missing from the default order that you also list in
+# `top_modules` gets queued and RUN TWICE - producing a duplicated section.
+# `report_section_order` reorders modules for display only, after they've already
+# run once, so it can't trigger this. Larger `order` = higher up the page.
+report_section_order:
+  fastp:
+    order: 1000
+  deacon:
+    order: 900
+  kraken:
+    order: 800
+
+show_analysis_paths: false
+
+# Sample name clean-up: strip the suffixes each module leaves behind so fastp,
+# deacon, and kraken2 all line up on the same sample name in General Stats.
+extra_fn_clean_exts:
+  - ".fastp"           # {sample}.fastp.json/html -> {sample}
+  - ".deacon"           # {sample}.deacon.json -> {sample}
+  - ".kraken2.report"  # {sample}.kraken2.report.tsv -> {sample}
+  - ".kraken2"
+
+# Keep the General Stats table readable: trim to the most decision-relevant
+# columns (edit freely - column IDs match those in multiqc_report_data/multiqc_general_stats.txt).
+table_columns_visible:
+  fastp:
+    pct_duplication: true
+    after_filtering_gc_content: false
+    pct_surviving_bases: true
+  Kraken:
+    pct_top_one: true
+    pct_unclassified: true
+
+# Report loudly if an expected log type is missing, rather than silently
+# producing a partial report.
+require_logs: true
+
+# Export data as tsv/parquet is the default; leave `export_plots` off unless you
+# want static PNG/SVG copies of every plot written into multiqc_report_data/ too.
+# export_plots: true
+
+# Uncomment and point at your own files to brand the report:
+# custom_logo: "/path/to/logo.png"
+# custom_logo_title: "My Institute"
+# custom_logo_url: "https://example.org"

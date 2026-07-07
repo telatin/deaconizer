@@ -2,7 +2,6 @@ process FASTP {
     tag "${meta.id}"
     label 'process_medium'
 
-    publishDir "${params.outdir}/reads/fastp", mode: params.publish_dir_mode, pattern: '*.fastp.R*.fastq.gz'
     publishDir "${params.outdir}/report/fastp", mode: params.publish_dir_mode, pattern: '*.fastp.{html,json}'
 
     container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
