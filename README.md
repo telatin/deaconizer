@@ -1,16 +1,13 @@
 # deaconizer
 
-Minimal nf-core-style Nextflow pipeline for paired-end reads:
+![logo](assets/deacon.png)
 
-1. `fastp` read cleaning
-2. `deacon index build` once per reference FASTA
-3. `deacon filter` per sample
-4. `kraken2` on Deacon-filtered reads
-5. `kraut make-table` to merge all Kraken2 reports into one abundance table
-6. `kraut plot-multi` to plot all Kraken2 reports together
-7. `multiqc` report aggregation
+Minimal nf-core-style Nextflow pipeline for paired-end reads, with index building workflow.
 
-## Input
+
+## mainf.nf 
+
+### Input
 
 CSV with columns `sample_id,reads_r1,reads_r2`. Use only letters, numbers, dots, underscores, and hyphens in `sample_id`.
 
@@ -19,7 +16,7 @@ sample_id,reads_r1,reads_r2
 sample_a,/path/sample_a_R1.fastq.gz,/path/sample_a_R2.fastq.gz
 ```
 
-## Run
+### Run
 
 ```bash
 nextflow run . -profile docker \
@@ -41,7 +38,7 @@ Stub test (no real tools, checks wiring only):
 nextflow run . -profile test,docker -stub-run
 ```
 
-## Outputs
+### Outputs
 
 ```text
 {outdir}/reads/*.gz        Final polished reads (fastp-cleaned, Deacon-filtered)
@@ -53,7 +50,7 @@ nextflow run . -profile test,docker -stub-run
 {outdir}/pipeline_info/    Nextflow execution reports
 ```
 
-## Key parameters
+### Key parameters
 
 | Param(s) | Default | Notes |
 |---|---|---|
