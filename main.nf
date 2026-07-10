@@ -6,6 +6,8 @@ include { FASTP        } from './modules/local/fastp/main'
 include { DEACON_INDEX } from './modules/local/deacon/index/main'
 include { DEACON_FILTER } from './modules/local/deacon/filter/main'
 include { KRAKEN2      } from './modules/local/kraken2/main'
+include { KRAUT_MAKETABLE } from './modules/local/kraut/maketable/main'
+include { KRAUT_PLOTMULTI } from './modules/local/kraut/plotmulti/main'
 include { MULTIQC      } from './modules/local/multiqc/main'
 
 workflow {
@@ -59,6 +61,13 @@ workflow {
     DEACON_FILTER(FASTP.out.reads.combine(DEACON_INDEX.out.index))
     KRAKEN2(DEACON_FILTER.out.reads.combine(db_ch))
 
+    kraken2_reports_ch = KRAKEN2.out.report
+        .map { meta, report -> report }
+        .collect()
+
+    KRAUT_MAKETABLE(kraken2_reports_ch)
+    KRAUT_PLOTMULTI(kraken2_reports_ch)
+
     FASTP.out.json
         .map { meta, json -> json }
         .mix(FASTP.out.html.map { meta, html -> html })
@@ -67,7 +76,9 @@ workflow {
         .collect()
         .set { multiqc_files_ch }
 
-    MULTIQC(multiqc_files_ch)
+    multiqc_config_ch = Channel.fromPath(params.multiqc_config, checkIfExists: true)
+
+    MULTIQC(multiqc_files_ch, multiqc_config_ch)
 }
 
 workflow.onComplete {

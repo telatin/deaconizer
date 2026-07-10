@@ -70,6 +70,40 @@
         }
       }
     },
+    "kraut_options": {
+      "title": "Kraut options",
+      "type": "object",
+      "properties": {
+        "kraut_rank": {
+          "type": "string",
+          "default": "S",
+          "description": "Taxonomic rank for kraut make-table/plot-multi (K/P/C/O/F/G/S/ALL)."
+        },
+        "kraut_metric": {
+          "type": "string",
+          "default": "TOT",
+          "description": "Measurement type for kraut make-table/plot-multi (LVL/TOT/PERCENTAGE)."
+        },
+        "kraut_maketable_args": {
+          "type": "string",
+          "default": ""
+        },
+        "kraut_plotmulti_args": {
+          "type": "string",
+          "default": ""
+        },
+        "kraut_plot_kind": {
+          "type": "string",
+          "default": "",
+          "description": "kraut plot-multi chart style: bar (default) or bubble."
+        },
+        "kraut_plot_ext": {
+          "type": "string",
+          "default": "png",
+          "description": "Extension of the kraut plot-multi output file. Use html when kraut_plot_kind is bubble."
+        }
+      }
+    },
     "runtime_options": {
       "title": "Runtime options",
       "type": "object",
@@ -85,6 +119,10 @@
         "multiqc_args": {
           "type": "string",
           "default": ""
+        },
+        "multiqc_config": {
+          "type": "string",
+          "description": "MultiQC custom configuration YAML."
         },
         "k8s_storage_claim_name": {
           "type": "string"
@@ -103,6 +141,7 @@
   "allOf": [
     { "$ref": "#/definitions/input_output_options" },
     { "$ref": "#/definitions/deacon_options" },
+    { "$ref": "#/definitions/kraut_options" },
     { "$ref": "#/definitions/runtime_options" }
   ]
 }

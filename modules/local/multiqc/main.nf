@@ -9,10 +9,11 @@ process MULTIQC {
 
     input:
     path multiqc_files
+    path multiqc_config
 
     output:
     path 'multiqc_report.html', emit: report
-    path 'multiqc_data', emit: data
+    path 'multiqc_report_data', emit: data
     path 'versions.yml', emit: versions
 
     script:
@@ -21,6 +22,7 @@ process MULTIQC {
     multiqc . \\
         --filename multiqc_report.html \\
         --outdir . \\
+        --config "${multiqc_config}" \\
         ${args}
 
     cat <<-END_VERSIONS > versions.yml
@@ -31,7 +33,7 @@ process MULTIQC {
 
     stub:
     """
-    mkdir -p multiqc_data
+    mkdir -p multiqc_report_data
     echo '<html><body>MultiQC stub</body></html>' > multiqc_report.html
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

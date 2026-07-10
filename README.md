@@ -1,6 +1,14 @@
 # deaconizer
 
-Minimal Nextflow pipeline for paired-end reads: `fastp` → `deacon` (host depletion) → `kraken2` → `kraut` (multi-sample table + plot) → `multiqc`.
+Minimal nf-core-style Nextflow pipeline for paired-end reads:
+
+1. `fastp` read cleaning
+2. `deacon index build` once per reference FASTA
+3. `deacon filter` per sample
+4. `kraken2` on Deacon-filtered reads
+5. `kraut make-table` to merge all Kraken2 reports into one abundance table
+6. `kraut plot-multi` to plot all Kraken2 reports together
+7. `multiqc` report aggregation
 
 ## Input
 
@@ -50,7 +58,15 @@ nextflow run . -profile test,docker -stub-run
 
 Extra tool args: `--fastp_args`, `--deacon_index_args`, `--deacon_filter_args`, `--kraken2_args`, `--kraut_maketable_args`, `--kraut_plotmulti_args`, `--multiqc_args`.
 
+<<<<<<< HEAD
 ## makedb.nf: building a masked Deacon index
+=======
+Kraut table/plot defaults are `--kraut_rank S` and `--kraut_metric TOT`. `kraut plot-multi` writes a stacked-bar PNG by default (`--kraut_plot_ext png`); set `--kraut_plot_kind bubble --kraut_plot_ext html` for an interactive bubble chart.
+
+Pass additional tool arguments with `--fastp_args`, `--deacon_index_args`, `--deacon_filter_args`, `--kraken2_args`, `--kraut_maketable_args`, `--kraut_plotmulti_args`, and `--multiqc_args`.
+
+MultiQC report branding and section layout are controlled by `assets/multiqc_config.yaml` (passed to MultiQC via `--config`). Override with `--multiqc_config /path/to/your.yaml` to customize the title, logo, or column selection.
+>>>>>>> 8d39e64a1be906c6bb9647ba0ec9eb808c916f58
 
 Separate entry point for building a Deacon minimizer index from a reference FASTA, optionally masking out the minimizers found in a set of other genomes (e.g. to remove sequences shared with a host or with the organisms of interest before using the index for depletion).
 

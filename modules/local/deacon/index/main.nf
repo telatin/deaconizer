@@ -20,11 +20,11 @@ process DEACON_INDEX {
         index \\
         build \\
         --threads ${task.cpus} \\
+        -k ${params.deacon_kmer_length} \\
+        -w ${params.deacon_window_size} \\
+        -e ${params.deacon_entropy_threshold} \\
         ${args} \\
         "${fasta}" \\
-        ${params.deacon_kmer_length} \\
-        ${params.deacon_window_size} \\
-        ${params.deacon_entropy_threshold} \\
         > deacon_reference.idx
 
     cat <<-END_VERSIONS > versions.yml
