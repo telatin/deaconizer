@@ -1,31 +1,21 @@
-process DEACON_INDEX {
-    tag "${fasta.baseName}"
-    label 'process_high'
+process DEACON_INDEX_INFO {
+    tag "${label}"
+    label 'process_low'
 
     container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/deacon:0.13.2--h7ef3eeb_1':
         'quay.io/biocontainers/deacon:0.13.2--h7ef3eeb_0' }"
 
     input:
-    path fasta
+    tuple val(label), path(index)
 
     output:
-    path "${fasta.baseName}.deacon.idx", emit: index
+    tuple val(label), path("${label}.index_info.txt"), emit: info
     path 'versions.yml', emit: versions
 
     script:
-    def args = task.ext.args ?: params.deacon_index_args ?: ''
     """
-    deacon \\
-        index \\
-        build \\
-        --threads ${task.cpus} \\
-        -k ${params.deacon_kmer_length} \\
-        -w ${params.deacon_window_size} \\
-        -e ${params.deacon_entropy_threshold} \\
-        ${args} \\
-        "${fasta}" \\
-        > "${fasta.baseName}.deacon.idx"
+    deacon index info "${index}" > "${label}.index_info.txt" 2>&1
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -35,7 +25,15 @@ process DEACON_INDEX {
 
     stub:
     """
-    echo 'stub-index' > "${fasta.baseName}.deacon.idx"
+    cat <<-END_INFO > "${label}.index_info.txt"
+    Index information:
+      Format: exact (minimizer set)
+      Format version: 1
+      K-mer length (k): ${params.deacon_kmer_length}
+      Window size (w): ${params.deacon_window_size}
+      Distinct minimizer count: 0
+    END_INFO
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         deacon: stub

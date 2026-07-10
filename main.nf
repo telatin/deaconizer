@@ -62,8 +62,8 @@ workflow {
     KRAKEN2(DEACON_FILTER.out.reads.combine(db_ch))
 
     kraken2_reports_ch = KRAKEN2.out.report
-        .map { meta, report -> report }
-        .collect()
+        .toSortedList { a, b -> a[0].id <=> b[0].id }
+        .map { pairs -> pairs.collect { meta, report -> report } }
 
     KRAUT_MAKETABLE(kraken2_reports_ch)
     KRAUT_PLOTMULTI(kraken2_reports_ch)

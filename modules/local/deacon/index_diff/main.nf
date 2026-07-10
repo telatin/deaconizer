@@ -1,31 +1,27 @@
-process DEACON_INDEX {
-    tag "${fasta.baseName}"
-    label 'process_high'
+process DEACON_INDEX_DIFF {
+    tag "diff"
+    label 'process_medium'
 
     container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/deacon:0.13.2--h7ef3eeb_1':
         'quay.io/biocontainers/deacon:0.13.2--h7ef3eeb_0' }"
 
     input:
-    path fasta
+    tuple path(ref_index), path(mask_index)
 
     output:
-    path "${fasta.baseName}.deacon.idx", emit: index
+    path 'reference.masked.deacon.idx', emit: index
     path 'versions.yml', emit: versions
 
     script:
-    def args = task.ext.args ?: params.deacon_index_args ?: ''
     """
     deacon \\
         index \\
-        build \\
+        diff \\
         --threads ${task.cpus} \\
-        -k ${params.deacon_kmer_length} \\
-        -w ${params.deacon_window_size} \\
-        -e ${params.deacon_entropy_threshold} \\
-        ${args} \\
-        "${fasta}" \\
-        > "${fasta.baseName}.deacon.idx"
+        "${ref_index}" \\
+        "${mask_index}" \\
+        > reference.masked.deacon.idx
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -35,7 +31,7 @@ process DEACON_INDEX {
 
     stub:
     """
-    echo 'stub-index' > "${fasta.baseName}.deacon.idx"
+    echo 'stub-diff' > reference.masked.deacon.idx
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         deacon: stub

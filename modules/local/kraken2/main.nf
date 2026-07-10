@@ -2,7 +2,8 @@ process KRAKEN2 {
     tag "${meta.id}"
     label 'process_high'
 
-    publishDir "${params.outdir}/report/kraken2", mode: params.publish_dir_mode, pattern: '*.kraken2.*'
+    publishDir "${params.outdir}/report/kraken2", mode: params.publish_dir_mode, pattern: '*.tsv'
+    publishDir "${params.outdir}/report/kraken2", mode: params.publish_dir_mode, pattern: '*.kraken2.output.txt'
 
     container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
         'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/0f/0f827dcea51be6b5c32255167caa2dfb65607caecdc8b067abd6b71c267e2e82/data' :
@@ -12,7 +13,7 @@ process KRAKEN2 {
     tuple val(meta), path(reads_r1), path(reads_r2), path(db)
 
     output:
-    tuple val(meta), path("${meta.id}.kraken2.report.tsv"), emit: report
+    tuple val(meta), path("${meta.id}.tsv"), emit: report
     tuple val(meta), path("${meta.id}.kraken2.output.txt"), emit: output
     path 'versions.yml', emit: versions
 
@@ -24,7 +25,7 @@ process KRAKEN2 {
         --threads ${task.cpus} \\
         --paired \\
         --gzip-compressed \\
-        --report "${meta.id}.kraken2.report.tsv" \\
+        --report "${meta.id}.tsv" \\
         --output "${meta.id}.kraken2.output.txt" \\
         ${args} \\
         "${reads_r1}" "${reads_r2}"
@@ -37,7 +38,7 @@ process KRAKEN2 {
 
     stub:
     """
-    echo -e '100.00\\t0\\t0\\tU\\t0\\tunclassified' > "${meta.id}.kraken2.report.tsv"
+    echo -e '100.00\\t0\\t0\\tU\\t0\\tunclassified' > "${meta.id}.tsv"
     touch "${meta.id}.kraken2.output.txt"
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

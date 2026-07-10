@@ -21,6 +21,10 @@
           "type": "string",
           "description": "Kraken2 database directory."
         },
+        "list": {
+          "type": "string",
+          "description": "makedb.nf only: optional CSV with columns id,fasta_path listing genomes whose minimizers should be masked out of the reference index."
+        },
         "outdir": {
           "type": "string",
           "default": "results",
