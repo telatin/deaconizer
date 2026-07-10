@@ -3,3 +3,4 @@ work/
 results/
 singularity/
 *.log
+.ipynb_checkpoints
