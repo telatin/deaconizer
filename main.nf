@@ -14,8 +14,11 @@ workflow {
     if (!params.input) {
         error 'Missing required parameter: --input CSV_FILE'
     }
-    if (!params.ref) {
-        error 'Missing required parameter: --ref REFERENCE_FASTA'
+    if (!params.ref && !params.index) {
+        error 'Missing required parameter: provide either --ref REFERENCE_FASTA or --index DEACON_INDEX'
+    }
+    if (params.ref && params.index) {
+        error 'Provide either --ref REFERENCE_FASTA or --index DEACON_INDEX, not both'
     }
     if (!params.db) {
         error 'Missing required parameter: --db KRAKEN2_DB'
@@ -53,12 +56,18 @@ workflow {
         .ifEmpty { error "Input CSV contains no samples: ${params.input}" }
         .set { reads_ch }
 
-    ref_ch = Channel.fromPath(params.ref, checkIfExists: true)
     db_ch  = Channel.fromPath(params.db, checkIfExists: true, type: 'any')
 
+    if (params.index) {
+        index_ch = Channel.fromPath(params.index, checkIfExists: true, type: 'file')
+    } else {
+        ref_ch = Channel.fromPath(params.ref, checkIfExists: true)
+        DEACON_INDEX(ref_ch)
+        index_ch = DEACON_INDEX.out.index
+    }
+
     FASTP(reads_ch)
-    DEACON_INDEX(ref_ch)
-    DEACON_FILTER(FASTP.out.reads.combine(DEACON_INDEX.out.index))
+    DEACON_FILTER(FASTP.out.reads.combine(index_ch))
     KRAKEN2(DEACON_FILTER.out.reads.combine(db_ch))
 
     kraken2_reports_ch = KRAKEN2.out.report

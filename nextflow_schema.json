@@ -7,7 +7,7 @@
     "input_output_options": {
       "title": "Input/output options",
       "type": "object",
-      "required": ["input", "ref", "db"],
+      "required": ["input", "db"],
       "properties": {
         "input": {
           "type": "string",
@@ -15,7 +15,11 @@
         },
         "ref": {
           "type": "string",
-          "description": "Reference FASTA used to build the Deacon minimizer index."
+          "description": "Reference FASTA used to build the Deacon minimizer index. Required unless --index is provided; mutually exclusive with --index."
+        },
+        "index": {
+          "type": "string",
+          "description": "Path to a pre-built Deacon index file (e.g. produced by makedb.nf), used instead of building one from --ref. Required unless --ref is provided; mutually exclusive with --ref."
         },
         "db": {
           "type": "string",

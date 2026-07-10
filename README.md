@@ -26,7 +26,14 @@ nextflow run . -profile docker \
   --input samples.csv --ref reference.fasta --db /path/to/kraken2db --outdir results
 ```
 
-Swap `-profile docker` for `-profile singularity,slurm` on HPC, or `-profile docker,k8s` on Kubernetes (add `--k8s_storage_claim_name`, `--k8s_storage_mount_path`; samplesheet/reads/ref/db/work/outdir must all sit under the mounted PVC path).
+Provide exactly one of `--ref` (a FASTA, indexed on the fly with `deacon index build`) or `--index` (a pre-built Deacon index file, e.g. produced by [`makedb.nf`](#makedbnf-building-a-masked-deacon-index)) — passing both, or neither, is an error:
+
+```bash
+nextflow run . -profile docker \
+  --input samples.csv --index reference.deacon.index --db /path/to/kraken2db --outdir results
+```
+
+Swap `-profile docker` for `-profile singularity,slurm` on HPC, or `-profile docker,k8s` on Kubernetes (add `--k8s_storage_claim_name`, `--k8s_storage_mount_path`; samplesheet/reads/ref/index/db/work/outdir must all sit under the mounted PVC path).
 
 Stub test (no real tools, checks wiring only):
 
@@ -58,15 +65,13 @@ nextflow run . -profile test,docker -stub-run
 
 Extra tool args: `--fastp_args`, `--deacon_index_args`, `--deacon_filter_args`, `--kraken2_args`, `--kraut_maketable_args`, `--kraut_plotmulti_args`, `--multiqc_args`.
 
-<<<<<<< HEAD
-## makedb.nf: building a masked Deacon index
-=======
 Kraut table/plot defaults are `--kraut_rank S` and `--kraut_metric TOT`. `kraut plot-multi` writes a stacked-bar PNG by default (`--kraut_plot_ext png`); set `--kraut_plot_kind bubble --kraut_plot_ext html` for an interactive bubble chart.
 
 Pass additional tool arguments with `--fastp_args`, `--deacon_index_args`, `--deacon_filter_args`, `--kraken2_args`, `--kraut_maketable_args`, `--kraut_plotmulti_args`, and `--multiqc_args`.
 
 MultiQC report branding and section layout are controlled by `assets/multiqc_config.yaml` (passed to MultiQC via `--config`). Override with `--multiqc_config /path/to/your.yaml` to customize the title, logo, or column selection.
->>>>>>> 8d39e64a1be906c6bb9647ba0ec9eb808c916f58
+
+## makedb.nf: building a masked Deacon index
 
 Separate entry point for building a Deacon minimizer index from a reference FASTA, optionally masking out the minimizers found in a set of other genomes (e.g. to remove sequences shared with a host or with the organisms of interest before using the index for depletion).
 
